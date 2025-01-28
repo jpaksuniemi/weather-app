@@ -62,7 +62,7 @@ const getWeatherByZip = async (zip: string, countryCode: string): Promise<Weathe
 
 const getWeatherByCity = async (city: string, countryCode: string): Promise<WeatherData | string> => {
     try {
-        const response = await axios.get(`${BASE_WEATHER_URL}q=${city},${countryCode}&appid=${API_KEY}`);
+        const response = await axios.get(`${BASE_WEATHER_URL}q=${city},${countryCode}&units=metric&appid=${API_KEY}`);
         console.log("Weather response ", response);
         return response.data;
     } catch (error) {
