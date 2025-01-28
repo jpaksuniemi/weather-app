@@ -12,7 +12,13 @@ interface Location {
   zip: string
 }
 
-interface Weather {
+interface WeatherData {
+    weather: {
+        id: number,
+        main: string,
+        description: string,
+        icon: string
+    }[],
     main: {
         temp: number,
         feels_like: number,
@@ -37,7 +43,7 @@ async function getLocation(zip: string, countryCode: string): Promise<Location |
     }
 }
 
-const getWeather = async (zip: string, countryCode: string): Promise<Weather | string> => {
+const getWeather = async (zip: string, countryCode: string): Promise<WeatherData | string> => {
     const location = await getLocation(zip, countryCode)
     if (location && location.lat && location.lon) {
         try {

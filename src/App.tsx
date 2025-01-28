@@ -1,7 +1,15 @@
 import React, { useState } from "react"
 import weatherService from "./service/weatherService";
 
-interface Weather {
+const BASE_IMAGE_URL = "https://openweathermap.org/img/wn/";
+
+interface WeatherData {
+    weather: {
+      id: number,
+      main: string,
+      description: string,
+      icon: string
+    }[],
     main: {
         temp: number,
         feels_like: number,
@@ -15,15 +23,19 @@ interface Weather {
     name: string
 }
 
-const WeatherData = ({weather}: {weather: Weather | string}) => {
-  if (typeof weather === "string") {
+const WeatherData = ({weather: data}: {weather: WeatherData | string}) => {
+  if (typeof data === "string") {
     return <p>No weather data available</p>
   }
 
+  const imageIcon = data.weather[0].icon;
+
   return (
     <ul>
-      <li>Location: {weather.name}</li>
-      <li>Temperature: {weather.main.temp}</li>
+      <img src={`${BASE_IMAGE_URL}${imageIcon}@2x.png`} alt={data.weather[0].main}/>
+      <li>Location: {data.name}</li>
+      <li>Temperature: {data.main.temp.toFixed(1)} C</li>
+      <li>Feels like: {data.main.feels_like.toFixed(1)}</li>
     </ul>
   )
 }
@@ -31,7 +43,7 @@ const WeatherData = ({weather}: {weather: Weather | string}) => {
 const App = () => {
   const [zipcode, setZipcode] = useState<string>("");
   const [statecode, setStatecode] = useState<string>("");
-  const [weather, setWeather] = useState<Weather | string>("");
+  const [weather, setWeather] = useState<WeatherData | string>("");
 
   const handleZipChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setZipcode(event.target.value);
