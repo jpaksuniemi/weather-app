@@ -1,23 +1,29 @@
 import React, { useState } from "react"
-import geocodeService from "./service/geocodeService";
+import weatherService from "./service/weatherService";
 
-interface Location {
-  country: string,
-  lat: string,
-  lon: string,
-  name: string,
-  zip: string
+interface Weather {
+    main: {
+        temp: number,
+        feels_like: number,
+        temp_min: number,
+        temp_max: number,
+        pressure: number,
+        humidity: number,
+        sea_level: number,
+        grnd_level: number
+    }
+    name: string
 }
 
-const LocationData = ({location}: {location: Location | null}) => {
-  if (!location) {
-    return <p>No location data available</p>
+const WeatherData = ({weather}: {weather: Weather | string}) => {
+  if (typeof weather === "string") {
+    return <p>No weather data available</p>
   }
 
   return (
     <ul>
-      <li>Country: {location.country}</li>
-      <li>City: {location.name}</li>
+      <li>Location: {weather.name}</li>
+      <li>Temperature: {weather.main.temp}</li>
     </ul>
   )
 }
@@ -25,7 +31,7 @@ const LocationData = ({location}: {location: Location | null}) => {
 const App = () => {
   const [zipcode, setZipcode] = useState<string>("");
   const [statecode, setStatecode] = useState<string>("");
-  const [location, setLocation] = useState<Location | null>(null);
+  const [weather, setWeather] = useState<Weather | string>("");
 
   const handleZipChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setZipcode(event.target.value);
@@ -35,21 +41,12 @@ const App = () => {
     setStatecode(event.target.value);
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("form submitted");
-    geocodeService
-      .getLocation(zipcode, statecode)
-      .then((responseData: Location) => {
-        setLocation(responseData);
-        console.log(responseData);
-      })
-      .catch((error: Error) => {
-        console.error("Error: ", error);
-      });
+    const weatherData = await weatherService.getWeather(zipcode, statecode);
+    setWeather(weatherData);
   }
-
-
 
   return (
     <div>
@@ -61,7 +58,7 @@ const App = () => {
         <button type="submit">Query</button>
       </form>
 
-      <LocationData location={location} />
+      <WeatherData weather={weather} />
     </div>
   )
 }
