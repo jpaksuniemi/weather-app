@@ -43,7 +43,7 @@ async function getLocation(zip: string, countryCode: string): Promise<Location |
     }
 }
 
-const getWeather = async (zip: string, countryCode: string): Promise<WeatherData | string> => {
+const getWeatherByZip = async (zip: string, countryCode: string): Promise<WeatherData | string> => {
     const location = await getLocation(zip, countryCode)
     if (location && location.lat && location.lon) {
         try {
@@ -60,4 +60,15 @@ const getWeather = async (zip: string, countryCode: string): Promise<WeatherData
     
 }
 
-export default { getWeather }
+const getWeatherByCity = async (city: string, countryCode: string): Promise<WeatherData | string> => {
+    try {
+        const response = await axios.get(`${BASE_WEATHER_URL}q=${city},${countryCode}&appid=${API_KEY}`);
+        console.log("Weather response ", response);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching weather data ", error);
+        return "Error fetching weather data";
+    }
+}
+
+export default { getWeatherByZip, getWeatherByCity }
