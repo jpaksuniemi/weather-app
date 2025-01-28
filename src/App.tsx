@@ -1,5 +1,6 @@
 import React, { useState } from "react"
-import weatherService from "./service/weatherService";
+import ZipForm from "./ZipForm";
+import CityForm from "./CityForm";
 
 const BASE_IMAGE_URL = "https://openweathermap.org/img/wn/";
 
@@ -32,7 +33,10 @@ const WeatherData = ({weather: data}: {weather: WeatherData | string}) => {
 
   return (
     <ul>
-      <img src={`${BASE_IMAGE_URL}${imageIcon}@2x.png`} alt={data.weather[0].main}/>
+      <img 
+        src={`${BASE_IMAGE_URL}${imageIcon}@2x.png`} 
+        alt={data.weather[0].main}
+      />
       <li>Location: {data.name}</li>
       <li>Temperature: {data.main.temp.toFixed(1)} C</li>
       <li>Feels like: {data.main.feels_like.toFixed(1)}</li>
@@ -40,42 +44,17 @@ const WeatherData = ({weather: data}: {weather: WeatherData | string}) => {
   )
 }
 
-const ZipForm = ({setWeather}: {setWeather: React.Dispatch<React.SetStateAction<WeatherData | string>>}) => {
-  const [zipcode, setZipcode] = useState<string>("");
-  const [statecode, setStatecode] = useState<string>("");
-  
-  const handleZipChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setZipcode(event.target.value);
-  }
-
-  const handleStatecodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStatecode(event.target.value);
-  }
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("form submitted");
-    const weatherData = await weatherService.getWeatherByZip(zipcode, statecode);
-    setWeather(weatherData);
-  }
-
-  return (
-      <form onSubmit={handleSubmit}>
-        zip<input type="text" value={zipcode} onChange={handleZipChange} />
-        <br />
-        statecode<input type="text" value={statecode} onChange={handleStatecodeChange} />
-        <br />
-        <button type="submit">Query</button>
-      </form>
-  )
-}
-
 const App = () => {
   const [weather, setWeather] = useState<WeatherData | string>("");
-
+  const [showCityForm, setShowCityForm] = useState<boolean>(true);
   return (
     <div>
-      <ZipForm setWeather={setWeather} />
+      <button onClick={() => setShowCityForm(!showCityForm)}>
+        {(showCityForm) ? "Search by zip" : "Search by city"}
+      </button>
+      {(showCityForm) 
+      ? <CityForm setWeather={setWeather}/> 
+      : <ZipForm setWeather={setWeather}/>}
       <WeatherData weather={weather} />
     </div>
   )
