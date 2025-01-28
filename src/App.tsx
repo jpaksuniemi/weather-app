@@ -1,30 +1,12 @@
 import React, { useState } from "react"
 import ZipForm from "./ZipForm";
 import CityForm from "./CityForm";
+import { WeatherData } from "./interfaces";
+import { WeatherForecast } from "./interfaces";
 
 const BASE_IMAGE_URL = "https://openweathermap.org/img/wn/";
 
-interface WeatherData {
-    weather: {
-      id: number,
-      main: string,
-      description: string,
-      icon: string
-    }[],
-    main: {
-        temp: number,
-        feels_like: number,
-        temp_min: number,
-        temp_max: number,
-        pressure: number,
-        humidity: number,
-        sea_level: number,
-        grnd_level: number
-    }
-    name: string
-}
-
-const WeatherData = ({weather: data}: {weather: WeatherData | string}) => {
+const CurrentWeather = ({data}: {data: WeatherData | string}) => {
   if (typeof data === "string") {
     return <p>No weather data available</p>
   }
@@ -39,13 +21,38 @@ const WeatherData = ({weather: data}: {weather: WeatherData | string}) => {
       />
       <li>Location: {data.name}</li>
       <li>Temperature: {data.main.temp.toFixed(1)} C</li>
-      <li>Feels like: {data.main.feels_like.toFixed(1)}</li>
+      <li>Feels like: {data.main.feels_like.toFixed(1)} C</li>
     </ul>
   )
 }
 
+const ForecastList = ({data}: {data: WeatherForecast | string}) => {
+  if (typeof data === "string") {
+    return <p>No forecast data available</p>
+  }
+
+  return (
+    <ul>
+      {data.list.map(entry => 
+        <ForecastEntry
+          key={entry.dt}
+          dateTime={entry.dt_txt.split(" ")[1]}
+          temp={entry.main.temp.toFixed(1)}
+          main={entry.weather[0].main}
+        />
+      )}
+    </ul>
+  )
+
+}
+
+const ForecastEntry = ({dateTime, temp, main}: {dateTime: string; temp: number; main: string}) => (
+  <li>{dateTime} - {temp} C - {main}</li> 
+)
+
 const App = () => {
   const [weather, setWeather] = useState<WeatherData | string>("");
+  const [forecast, setForecast] = useState<WeatherForecast | string>("");
   const [showCityForm, setShowCityForm] = useState<boolean>(true);
   return (
     <div>
@@ -53,9 +60,10 @@ const App = () => {
         {(showCityForm) ? "Search by zip" : "Search by city"}
       </button>
       {(showCityForm) 
-      ? <CityForm setWeather={setWeather}/> 
+      ? <CityForm setWeather={setWeather} setForecast={setForecast} /> 
       : <ZipForm setWeather={setWeather}/>}
-      <WeatherData weather={weather} />
+      <CurrentWeather data={weather} />
+      <ForecastList data={forecast} />
     </div>
   )
 }

@@ -1,27 +1,12 @@
 import weatherService from "./service/weatherService";
-import { useState } from "react";
+import React, { useState } from "react";
+import { WeatherData } from "./interfaces";
+import { WeatherForecast } from "./interfaces";
 
-interface WeatherData {
-    weather: {
-        id: number,
-        main: string,
-        description: string,
-        icon: string
-    }[],
-    main: {
-        temp: number,
-        feels_like: number,
-        temp_min: number,
-        temp_max: number,
-        pressure: number,
-        humidity: number,
-        sea_level: number,
-        grnd_level: number
-    }
-    name: string
-}
-
-const CityForm = ({setWeather}: {setWeather: React.Dispatch<React.SetStateAction<WeatherData | string>>}) => {
+const CityForm = ({setWeather, setForecast}: {
+  setWeather: React.Dispatch<React.SetStateAction<WeatherData | string>>; 
+  setForecast: React.Dispatch<React.SetStateAction<WeatherForecast | string>>;
+}) => {
     const [city, setCity] = useState<string>("");
     const [statecode, setStatecode] = useState<string>("fi");
     
@@ -37,7 +22,9 @@ const CityForm = ({setWeather}: {setWeather: React.Dispatch<React.SetStateAction
       event.preventDefault();
       console.log("form submitted");
       const weatherData = await weatherService.getWeatherByCity(city, statecode);
+      const forecastData = await weatherService.getForecastByCity(city, statecode);
       setWeather(weatherData);
+      setForecast(forecastData);
     }
   
     return (

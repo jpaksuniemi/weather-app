@@ -1,8 +1,11 @@
 import axios from "axios";
+import { WeatherData } from "../interfaces";
+import { WeatherForecast } from "../interfaces";
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
-const BASE_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?"
+const BASE_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?";
 const BASE_GEOCODE_URL = "http://api.openweathermap.org/geo/1.0/zip?";
+const BASE_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast?";
 
 interface Location {
   country: string,
@@ -10,26 +13,6 @@ interface Location {
   lon: string,
   name: string,
   zip: string
-}
-
-interface WeatherData {
-    weather: {
-        id: number,
-        main: string,
-        description: string,
-        icon: string
-    }[],
-    main: {
-        temp: number,
-        feels_like: number,
-        temp_min: number,
-        temp_max: number,
-        pressure: number,
-        humidity: number,
-        sea_level: number,
-        grnd_level: number
-    }
-    name: string
 }
 
 async function getLocation(zip: string, countryCode: string): Promise<Location | null> {
@@ -71,4 +54,15 @@ const getWeatherByCity = async (city: string, countryCode: string): Promise<Weat
     }
 }
 
-export default { getWeatherByZip, getWeatherByCity }
+const getForecastByCity = async (city: string, countryCode: string): Promise<WeatherForecast | string> => {
+    try {
+        const response = await axios.get(`${BASE_FORECAST_URL}q=${city},${countryCode}&units=metric&appid=${API_KEY}`);
+        console.log("Forecast response ", response); 
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching forecast data ", error);
+        return "Error fetching forecast data"; 
+    }
+}
+
+export default { getWeatherByZip, getWeatherByCity, getForecastByCity }
