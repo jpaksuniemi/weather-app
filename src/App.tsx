@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import ZipForm from "./ZipForm";
 import CityForm from "./CityForm";
-import { WeatherData } from "./interfaces";
+import { ForecastDay, WeatherData } from "./interfaces";
 import { WeatherForecast } from "./interfaces";
+import { getForecastDayList } from "./forecastGrouper";
 
 const BASE_IMAGE_URL = "https://openweathermap.org/img/wn/";
 
@@ -31,6 +32,10 @@ const ForecastList = ({data}: {data: WeatherForecast | string}) => {
     return <p>No forecast data available</p>
   }
 
+  const days: ForecastDay[] = getForecastDayList(data);
+  console.log(days);
+  
+
   return (
     <ul>
       {data.list.map(entry => 
@@ -46,7 +51,7 @@ const ForecastList = ({data}: {data: WeatherForecast | string}) => {
 
 }
 
-const ForecastEntry = ({dateTime, temp, main}: {dateTime: string; temp: number; main: string}) => (
+const ForecastEntry = ({dateTime, temp, main}: {dateTime: string; temp: string; main: string}) => (
   <li>{dateTime} - {temp} C - {main}</li> 
 )
 

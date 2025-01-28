@@ -17,6 +17,17 @@ export interface WeatherForecast {
     }
 }
 
+export interface ForecastDay {
+    date: string,
+    entries: Entry[],
+}
+
+export interface Entry {
+    time: string,
+    temp: number,
+    icon: string
+}
+
 export interface WeatherData {
     weather: {
         id: number,
