@@ -40,11 +40,10 @@ const WeatherData = ({weather: data}: {weather: WeatherData | string}) => {
   )
 }
 
-const App = () => {
+const ZipForm = ({setWeather}: {setWeather: React.Dispatch<React.SetStateAction<WeatherData | string>>}) => {
   const [zipcode, setZipcode] = useState<string>("");
   const [statecode, setStatecode] = useState<string>("");
-  const [weather, setWeather] = useState<WeatherData | string>("");
-
+  
   const handleZipChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setZipcode(event.target.value);
   }
@@ -56,12 +55,11 @@ const App = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("form submitted");
-    const weatherData = await weatherService.getWeather(zipcode, statecode);
+    const weatherData = await weatherService.getWeatherByZip(zipcode, statecode);
     setWeather(weatherData);
   }
 
   return (
-    <div>
       <form onSubmit={handleSubmit}>
         zip<input type="text" value={zipcode} onChange={handleZipChange} />
         <br />
@@ -69,7 +67,15 @@ const App = () => {
         <br />
         <button type="submit">Query</button>
       </form>
+  )
+}
 
+const App = () => {
+  const [weather, setWeather] = useState<WeatherData | string>("");
+
+  return (
+    <div>
+      <ZipForm setWeather={setWeather} />
       <WeatherData weather={weather} />
     </div>
   )
