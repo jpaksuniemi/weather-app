@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import ZipForm from "./ZipForm";
 import CityForm from "./CityForm";
-import { ForecastDay, WeatherData } from "./interfaces";
+import { Entry, ForecastDay, WeatherData } from "./interfaces";
 import { WeatherForecast } from "./interfaces";
 import { getForecastDayList } from "./forecastGrouper";
 
@@ -37,22 +37,28 @@ const ForecastList = ({data}: {data: WeatherForecast | string}) => {
   
 
   return (
-    <ul>
-      {data.list.map(entry => 
-        <ForecastEntry
-          key={entry.dt}
-          dateTime={entry.dt_txt.split(" ")[1]}
-          temp={entry.main.temp.toFixed(1)}
-          main={entry.weather[0].main}
-        />
-      )}
-    </ul>
+    <div style={{display: "flex", flexWrap: "wrap", gap: "20px"}}>
+      {days.map(day => (
+        <div key={day.date}>
+          <strong>{day.date}</strong>
+          <ul style={{ listStyleType: "none", padding: 0}}>
+            {day.entries.map((time: Entry) => (
+              <ForecastEntry
+                key={time.time}
+                dateTime={time.time}
+                temp={time.temp.toFixed(1)}
+                main={time.icon}
+              />
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
   )
-
 }
 
 const ForecastEntry = ({dateTime, temp, main}: {dateTime: string; temp: string; main: string}) => (
-  <li>{dateTime} - {temp} C - {main}</li> 
+  <li>{dateTime} <strong>----</strong> {temp} C <img src={`${BASE_IMAGE_URL}${main}.png`}/></li> 
 )
 
 const App = () => {
