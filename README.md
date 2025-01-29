@@ -4,3 +4,5 @@ Fetches weather forecast data from OpenWeather API and displays it in a semi-for
 ```
 VITE_OPENWEATHER_API_KEY=<your api-key>
 ```
+
+![GIF demonstrating use of the app](weather-app.gif)
